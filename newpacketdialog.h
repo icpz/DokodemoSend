@@ -6,6 +6,9 @@
 #include "ui_newpacketdialog.h"
 #include <sys/socket.h>
 #include "dsdevice.h"
+#include "DSPacket/DSPacket.h"
+#include <QVector>
+#include <stdint.h>
 
 namespace Ui {
 class NewPacketDialog;
@@ -20,7 +23,7 @@ public:
     ~NewPacketDialog();
 
     Ui::NewPacketDialog *getUiHandle() { return ui; }
-    std::string getNewPacket();
+    DSPacket *getNewPacket();
     void show();
 
 private:
@@ -31,9 +34,17 @@ private:
     int getDeviceByName(const QString &name);
     void updateSourceIpCompleter(int family, const QString &dev);
 
+    DSPacket *generateTcpPacket() const;
+    bool checkTcp() const { return true; }
+    int getTcpFlag() const;
+
+    DSPacket *generateUdpPacket() const;
+    DSPacket *generateIpPacket() const;
+
     static void *get_in_addr(struct sockaddr *sa);
     static int get_ip_family(const QString &af);
     static bool is_ip_valid(int family, const QString &ip);
+    static QVector<uint8_t> parse_hex(const QString &hexes);
 };
 
 #endif // NEWPACKETDIALOG_H

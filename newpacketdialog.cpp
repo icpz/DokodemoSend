@@ -33,8 +33,19 @@ NewPacketDialog::~NewPacketDialog()
     delete ui;
 }
 
-std::string NewPacketDialog::getNewPacket() {
-    return "in packet";
+DSPacket *NewPacketDialog::getNewPacket() {
+    DSPacket *result = nullptr;
+    QString &&type = ui->tabPacketType->tabText(ui->tabPacketType->currentIndex());
+
+    if (type == tr("TCP")) {
+        result = generateTcpPacket();
+    } else if (type == tr("UDP")) {
+        result = generateUdpPacket();
+    } else if (type == tr("IP")) {
+        result = generateIpPacket();
+    }
+
+    return result;
 }
 
 void *NewPacketDialog::get_in_addr(struct sockaddr *sa) {
@@ -61,7 +72,7 @@ void NewPacketDialog::initDeviceList() {
             auto ipFamily = addr->addr->sa_family;
             if(ipFamily == AF_INET || ipFamily == AF_INET6) {
                 inet_ntop(ipFamily, get_in_addr((struct sockaddr *)addr->addr), ipBuf, sizeof ipBuf);
-                qDebug() << device->name << ipBuf;
+                // qDebug() << device->name << ipBuf;
                 dev.push_address(ipFamily, ipBuf);
             }
         }
@@ -101,4 +112,53 @@ void NewPacketDialog::updateSourceIpCompleter(int family, const QString &dev) {
 
     newCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     ui->srcIPEdit->setCompleter(newCompleter);
+}
+
+DSPacket *NewPacketDialog::generateTcpPacket() const {
+    if (!checkTcp()) return nullptr;
+
+    QString &&dev = ui->captureComboBox->currentText();
+    auto *result = new DSTcpPacket(dev, get_ip_family(ui->ipModeComboBox->currentText()),
+                                    ui->srcIPEdit->text(), ui->dstIPEdit->text());
+    result->setupParameter(ui->tcpSrcPort->text().toShort(), ui->tcpDstPort->text().toShort(),
+                           ui->tcpSeqNumber->text().toInt(), ui->tcpAckNumber->text().toInt(),
+                           getTcpFlag(), ui->tcpWindow->text().toInt(), ui->tcpUrgent->text().toShort(),
+                           parse_hex(ui->tcpOptions->text()), parse_hex(ui->packetPayload->toPlainText()));
+
+    result->updateParameter();
+
+    return result;
+}
+
+DSPacket *NewPacketDialog::generateUdpPacket() const {
+    return nullptr;
+}
+
+DSPacket *NewPacketDialog::generateIpPacket() const {
+    return nullptr;
+}
+
+int NewPacketDialog::getTcpFlag() const {
+    int result = 0;
+
+    if (ui->tcpFIN->isChecked()) result |= TH_FIN;
+    if (ui->tcpSYN->isChecked()) result |= TH_SYN;
+    if (ui->tcpACK->isChecked()) result |= TH_ACK;
+    if (ui->tcpURG->isChecked()) result |= TH_URG;
+    if (ui->tcpPSH->isChecked()) result |= TH_PUSH;
+    if (ui->tcpRST->isChecked()) result |= TH_RST;
+
+    return result;
+}
+
+QVector<uint8_t> NewPacketDialog::parse_hex(const QString &hexes) {
+    QVector<uint8_t> result;
+    QString filtered;
+
+    std::remove_copy(std::cbegin(hexes), std::cend(hexes),
+                     std::back_inserter(filtered), QChar(' '));
+    for (int i = 0; i < filtered.size(); i += 2) {
+        result.push_back(filtered.mid(i, 2).toUInt(nullptr, 16));
+    }
+    return result;
 }
