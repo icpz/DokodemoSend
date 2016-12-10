@@ -13,9 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     initPacketTable();
 
-    connect(ui->sendAllButton, &QPushButton::clicked, [&]() {
-            for (auto p : packets) p->send();
-        });
+    connect(ui->sendAllButton, &QPushButton::clicked, this, &MainWindow::sendAllPackets);
+    connect(ui->sendSelectedButton, &QPushButton::clicked, this, &MainWindow::sendSelectedPackets);
 }
 
 MainWindow::~MainWindow()
@@ -31,6 +30,7 @@ void MainWindow::addNewPacket() {
     auto set_table_item = [&](const QString &item) {
         static int col = 0;
         ui->packetTable->setItem(newRow, col++, new QTableWidgetItem(item));
+        col %= 7;
     };
 
     ui->packetTable->insertRow(newRow);
@@ -52,6 +52,8 @@ void MainWindow::addNewPacket() {
 
 void MainWindow::initPacketTable() {
     ui->packetTable->setColumnWidth(0, 30);
+    ui->packetTable->setColumnWidth(1, 60);
+    ui->packetTable->setColumnWidth(6, 200);
 
     connect(ui->newPacketButton, &QPushButton::clicked, this->newPacketDlg, &NewPacketDialog::show);
     connect(newPacketDlg->getUiHandle()->newPacketDlgButtonBox,
@@ -64,3 +66,11 @@ void MainWindow::initPacketTable() {
     });
 }
 
+void MainWindow::sendAllPackets() {
+    for (auto p : packets) p->send();
+}
+
+void MainWindow::sendSelectedPackets() {
+    auto selected = ui->packetTable->selectedItems();
+    for (auto idx : selected) packets[idx->row()]->send();
+}

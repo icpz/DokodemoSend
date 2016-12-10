@@ -40,6 +40,9 @@ protected:
     QString source, destination, device;
     QVector<uint8_t> packet;
 
+    void updateIpHeader(int protoSize);
+    void initHandle();
+    void updatePacketData();
 };
 
 class DSTcpPacket : public DSPacket {
@@ -62,7 +65,20 @@ private:
 
 };
 
-class DSUdpPacket {
+class DSUdpPacket : public DSPacket{
+
+public:
+    DSUdpPacket(const QString &device, int ipFamily, const QString &srcIp, const QString &dstIp);
+    ~DSUdpPacket() { }
+
+    void setupParameter(uint16_t srcPort, uint16_t dstPort, const QVector<uint8_t> &payload);
+    void updateParameter();
+    QString getProto() const { return "UDP"; }
+
+private:
+    uint16_t srcPort, dstPort;
+    QVector<uint8_t> payload;
+
 };
 
 #endif

@@ -23,6 +23,8 @@ private:
     NewPacketDialog *newPacketDlg;
     QVector<DSPacket *> packets;
 
+    void sendSelectedPackets();
+    void sendAllPackets();
     void addNewPacket();
     void initPacketTable();
 

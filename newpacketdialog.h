@@ -35,10 +35,11 @@ private:
     void updateSourceIpCompleter(int family, const QString &dev);
 
     DSPacket *generateTcpPacket() const;
-    bool checkTcp() const { return true; }
+    bool checkTcp() const;
     int getTcpFlag() const;
 
     DSPacket *generateUdpPacket() const;
+    bool checkUdp() const;
     DSPacket *generateIpPacket() const;
 
     static void *get_in_addr(struct sockaddr *sa);

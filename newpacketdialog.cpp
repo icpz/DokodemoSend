@@ -3,7 +3,6 @@
 #include <pcap.h>
 #include <QDebug>
 #include <QCompleter>
-#include <libnet.h>
 #include <sys/socket.h>
 
 NewPacketDialog::NewPacketDialog(QWidget *parent) :
@@ -57,7 +56,7 @@ void *NewPacketDialog::get_in_addr(struct sockaddr *sa) {
 
 void NewPacketDialog::initDeviceList() {
     pcap_if_t *alldev;
-    char errbuf[std::max(PCAP_ERRBUF_SIZE, LIBNET_ERRBUF_SIZE)];
+    char errbuf[PCAP_ERRBUF_SIZE];
     char ipBuf[INET6_ADDRSTRLEN];
     QStringList devList;
 
@@ -117,6 +116,7 @@ void NewPacketDialog::updateSourceIpCompleter(int family, const QString &dev) {
 DSPacket *NewPacketDialog::generateTcpPacket() const {
     if (!checkTcp()) return nullptr;
 
+    qDebug() << "TCP Packet generating...";
     QString &&dev = ui->captureComboBox->currentText();
     auto *result = new DSTcpPacket(dev, get_ip_family(ui->ipModeComboBox->currentText()),
                                     ui->srcIPEdit->text(), ui->dstIPEdit->text());
@@ -125,13 +125,20 @@ DSPacket *NewPacketDialog::generateTcpPacket() const {
                            getTcpFlag(), ui->tcpWindow->text().toInt(), ui->tcpUrgent->text().toShort(),
                            parse_hex(ui->tcpOptions->text()), parse_hex(ui->packetPayload->toPlainText()));
 
-    result->updateParameter();
-
     return result;
 }
 
 DSPacket *NewPacketDialog::generateUdpPacket() const {
-    return nullptr;
+    if (!checkUdp()) return nullptr;
+
+    qDebug() << "UDP Packet generating...";
+    QString &&dev = ui->captureComboBox->currentText();
+    auto *result = new DSUdpPacket(dev, get_ip_family(ui->ipModeComboBox->currentText()),
+                                   ui->srcIPEdit->text(), ui->dstIPEdit->text());
+    result->setupParameter(ui->udpSrcPort->text().toShort(), ui->udpDstPort->text().toShort(),
+                           parse_hex(ui->packetPayload->toPlainText()));
+
+    return result;
 }
 
 DSPacket *NewPacketDialog::generateIpPacket() const {
@@ -149,6 +156,14 @@ int NewPacketDialog::getTcpFlag() const {
     if (ui->tcpRST->isChecked()) result |= TH_RST;
 
     return result;
+}
+
+bool NewPacketDialog::checkTcp() const {
+    return true;
+}
+
+bool NewPacketDialog::checkUdp() const {
+    return true;
 }
 
 QVector<uint8_t> NewPacketDialog::parse_hex(const QString &hexes) {
