@@ -71,6 +71,7 @@ void MainWindow::sendAllPackets() {
 }
 
 void MainWindow::sendSelectedPackets() {
-    auto selected = ui->packetTable->selectedItems();
-    for (auto idx : selected) packets[idx->row()]->send();
+    auto selected = ui->packetTable->selectionModel()->selectedRows();
+    qDebug() << selected.size() << "packets selected";
+    for (auto idx : selected) packets[idx.row()]->send();
 }

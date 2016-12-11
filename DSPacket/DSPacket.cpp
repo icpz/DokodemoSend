@@ -27,11 +27,12 @@ void DSPacket::dumpPacket(QString &buf) const {
 
 void DSPacket::updateIpHeader(int protoSize) {
     libnet_ptag_t ptag = 0;
+    libnet_seed_prand(handle);
 
     if (family == AF_INET) {
         qDebug() << "building ipv4...";
         ptag = libnet_build_ipv4(LIBNET_IPV4_H + protoSize,
-                0, 242, 0, ttl, proto, 0,
+                0, libnet_get_prand(LIBNET_PRu16), 0, ttl, proto, 0,
                 libnet_name2addr4(handle,
                     const_cast<char *>(source.toStdString().c_str()), LIBNET_DONT_RESOLVE),
                 libnet_name2addr4(handle,
