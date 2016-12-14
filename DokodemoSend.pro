@@ -17,7 +17,8 @@ SOURCES += main.cpp\
     dsdevice.cpp \
     DSPacket/DSPacket.cpp \
     DSPacket/DSTcpPacket.cpp \
-    DSPacket/DSUdpPacket.cpp
+    DSPacket/DSUdpPacket.cpp \
+    DSPacket/DSIpPacket.cpp
 
 HEADERS  += mainwindow.h \
     newpacketdialog.h \

@@ -31,8 +31,9 @@ private:
     QVector<DSDevice> devicelist;
 
     void initDeviceList();
-    int getDeviceByName(const QString &name);
+    int getDeviceByName(const QString &name) const;
     void updateSourceIpCompleter(int family, const QString &dev);
+    int getIpFamily() const;
 
     DSPacket *generateTcpPacket() const;
     bool checkTcp() const;
@@ -40,10 +41,12 @@ private:
 
     DSPacket *generateUdpPacket() const;
     bool checkUdp() const;
+
     DSPacket *generateIpPacket() const;
+    bool checkIp() const;
+    int getIpFlag() const;
 
     static void *get_in_addr(struct sockaddr *sa);
-    static int get_ip_family(const QString &af);
     static bool is_ip_valid(int family, const QString &ip);
     static QVector<uint8_t> parse_hex(const QString &hexes);
 };

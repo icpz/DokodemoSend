@@ -17,12 +17,12 @@ NewPacketDialog::NewPacketDialog(QWidget *parent) :
     connect(ui->captureComboBox,
             static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged),
             [&](const QString &dev) {
-                int ipFamily = get_ip_family(ui->ipModeComboBox->currentText());
+                int ipFamily = this->getIpFamily();
                 updateSourceIpCompleter(ipFamily, dev);
             });
     connect(ui->ipModeComboBox, &QComboBox::currentTextChanged,
             [&](const QString &ipMode) {
-                int ipFamily = get_ip_family(ipMode);
+                int ipFamily = ipMode.indexOf("4") == -1 ? AF_INET6 : AF_INET;
                 updateSourceIpCompleter(ipFamily, ui->captureComboBox->currentText());
             });
 }
@@ -93,7 +93,7 @@ void NewPacketDialog::show() {
     QDialog::show();
 }
 
-int NewPacketDialog::getDeviceByName(const QString &name) {
+int NewPacketDialog::getDeviceByName(const QString &name) const {
     for (int i = 0; i < devicelist.size(); ++i) {
         if (devicelist[i].get_device_name() == name)
             return i;
@@ -101,7 +101,8 @@ int NewPacketDialog::getDeviceByName(const QString &name) {
     return -1;
 }
 
-int NewPacketDialog::get_ip_family(const QString &af) {
+int NewPacketDialog::getIpFamily() const {
+    QString &&af = ui->ipModeComboBox->currentText();
     return af.indexOf(tr("4")) == -1 ? AF_INET6 : AF_INET;
 }
 
@@ -118,13 +119,14 @@ DSPacket *NewPacketDialog::generateTcpPacket() const {
 
     qDebug() << "TCP Packet generating...";
     QString &&dev = ui->captureComboBox->currentText();
-    auto *result = new DSTcpPacket(dev, get_ip_family(ui->ipModeComboBox->currentText()),
+    auto *result = new DSTcpPacket(dev, getIpFamily(),
                                     ui->srcIPEdit->text(), ui->dstIPEdit->text());
+    result->setTTL(ui->ttlEdit->text().toInt());
+    result->setDelay(ui->delayEdit->text().toInt());
     result->setupParameter(ui->tcpSrcPort->text().toShort(), ui->tcpDstPort->text().toShort(),
                            ui->tcpSeqNumber->text().toInt(), ui->tcpAckNumber->text().toInt(),
                            getTcpFlag(), ui->tcpWindow->text().toInt(), ui->tcpUrgent->text().toShort(),
                            parse_hex(ui->tcpOptions->text()), parse_hex(ui->packetPayload->toPlainText()));
-
     return result;
 }
 
@@ -133,16 +135,39 @@ DSPacket *NewPacketDialog::generateUdpPacket() const {
 
     qDebug() << "UDP Packet generating...";
     QString &&dev = ui->captureComboBox->currentText();
-    auto *result = new DSUdpPacket(dev, get_ip_family(ui->ipModeComboBox->currentText()),
+    auto *result = new DSUdpPacket(dev, getIpFamily(),
                                    ui->srcIPEdit->text(), ui->dstIPEdit->text());
+    result->setTTL(ui->ttlEdit->text().toInt());
+    result->setDelay(ui->delayEdit->text().toInt());
     result->setupParameter(ui->udpSrcPort->text().toShort(), ui->udpDstPort->text().toShort(),
                            parse_hex(ui->packetPayload->toPlainText()));
-
     return result;
 }
 
 DSPacket *NewPacketDialog::generateIpPacket() const {
-    return nullptr;
+    if (!checkIp()) return nullptr;
+    DSPacket *result = nullptr;
+    int ipFamily = getIpFamily();
+
+    qDebug() << "RAW Ip Packet generating...";
+    QString &&dev = ui->captureComboBox->currentText();
+    if (ipFamily == AF_INET) {
+        auto ipv4 = new DSIpPacket4(dev, ipFamily,
+                                 ui->srcIPEdit->text(), ui->dstIPEdit->text(),
+                                 ui->ipProto->text().toInt());
+
+        ipv4->setTTL(ui->ttlEdit->text().toInt());
+        ipv4->setDelay(ui->delayEdit->text().toInt());
+
+        ipv4->setupParameter(ui->ipTos->text().toInt(nullptr, 16),
+                             ui->ipIdentifier->text().toInt(),
+                             getIpFlag(),
+                             ui->ipFrag->text().toInt(),
+                             parse_hex(ui->ipOptions->text()),
+                             parse_hex(ui->packetPayload->toPlainText()));
+        result = ipv4;
+    }
+    return result;
 }
 
 int NewPacketDialog::getTcpFlag() const {
@@ -158,11 +183,24 @@ int NewPacketDialog::getTcpFlag() const {
     return result;
 }
 
+int NewPacketDialog::getIpFlag() const {
+    int result = 0;
+
+    if (ui->ipDF->isChecked()) result |= IP_DF;
+    if (ui->ipMF->isChecked()) result = IP_MF;
+
+    return result;
+}
+
 bool NewPacketDialog::checkTcp() const {
     return true;
 }
 
 bool NewPacketDialog::checkUdp() const {
+    return true;
+}
+
+bool NewPacketDialog::checkIp() const {
     return true;
 }
 

@@ -48,7 +48,8 @@ protected:
 class DSTcpPacket : public DSPacket {
 
 public:
-    DSTcpPacket(const QString &device, int ipFamily, const QString &srcIp, const QString &dstIp);
+    DSTcpPacket(const QString &device, int ipFamily,
+                const QString &srcIp, const QString &dstIp);
     ~DSTcpPacket() { }
 
     void setupParameter(uint16_t srcPort, uint16_t dstPort,
@@ -68,7 +69,8 @@ private:
 class DSUdpPacket : public DSPacket{
 
 public:
-    DSUdpPacket(const QString &device, int ipFamily, const QString &srcIp, const QString &dstIp);
+    DSUdpPacket(const QString &device, int ipFamily,
+                const QString &srcIp, const QString &dstIp);
     ~DSUdpPacket() { }
 
     void setupParameter(uint16_t srcPort, uint16_t dstPort, const QVector<uint8_t> &payload);
@@ -78,6 +80,25 @@ public:
 private:
     uint16_t srcPort, dstPort;
     QVector<uint8_t> payload;
+
+};
+
+class DSIpPacket4 : public DSPacket {
+
+public:
+    DSIpPacket4(const QString &device, int ipFamily, const QString &srcIp, const QString &dstIp, uint8_t proto);
+    ~DSIpPacket4() { }
+
+    void setupParameter(uint8_t tos, uint16_t identifier, uint8_t flags,
+                        uint16_t frag, const QVector<uint8_t> &option,
+                        const QVector<uint8_t> &payload);
+    void updateParameter();
+    QString getProto() const { return "IPv4"; }
+
+private:
+    uint16_t identifier, frag;
+    uint8_t tos, flags;
+    QVector<uint8_t> option, payload;
 
 };
 

@@ -8,7 +8,10 @@
 
 int DSPacket::send() const {
     usleep(delay);
-    return ready ? libnet_write(handle) : 0;
+    qDebug() << "packet is" << (ready ? "ready" : "not ready");
+    int sent = ready ? libnet_write(handle) : 0;
+    qDebug() << sent << "bytes sent.";
+    return sent;
 }
 
 int DSPacket::length() const {
