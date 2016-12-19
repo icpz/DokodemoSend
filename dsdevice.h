@@ -11,7 +11,7 @@ class DSDevice {
 public:
     using list_node = QPair<int, QString>;
 
-    DSDevice() { };
+    DSDevice() { }
     explicit DSDevice(const QString &devname);
     ~DSDevice();
 

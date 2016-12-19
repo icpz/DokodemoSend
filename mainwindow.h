@@ -2,7 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTableWidget>
 #include "newpacketdialog.h"
+#include "DSPacket/DSPacket.h"
 
 namespace Ui {
 class MainWindow;
@@ -19,8 +21,13 @@ public:
 private:
     Ui::MainWindow *ui;
     NewPacketDialog *newPacketDlg;
+    QVector<DSPacket *> packets;
+
+    void sendSelectedPackets();
+    void sendAllPackets();
     void addNewPacket();
     void initPacketTable();
+
 };
 
 #endif // MAINWINDOW_H
