@@ -19,6 +19,9 @@ class NewPacketDialog : public QDialog
     Q_OBJECT
 
 public:
+
+    enum {TAB_TCP, TAB_UDP, TAB_IP, TAB_ARP, TAB_ICMP};
+
     explicit NewPacketDialog(QWidget *parent = 0);
     ~NewPacketDialog();
 
@@ -31,9 +34,11 @@ private:
     QVector<DSDevice> devicelist;
 
     void initDeviceList();
+    void initSignals();
     int getDeviceByName(const QString &name) const;
     void updateSourceIpCompleter(int family, const QString &dev);
     int getIpFamily() const;
+    void switchIpTab();
 
     DSPacket *generateTcpPacket() const;
     bool checkTcp() const;

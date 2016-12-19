@@ -13,18 +13,9 @@ NewPacketDialog::NewPacketDialog(QWidget *parent) :
     ui->setupUi(this);
 
     initDeviceList();
+    initSignals();
 
-    connect(ui->captureComboBox,
-            static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged),
-            [&](const QString &dev) {
-                int ipFamily = this->getIpFamily();
-                updateSourceIpCompleter(ipFamily, dev);
-            });
-    connect(ui->ipModeComboBox, &QComboBox::currentTextChanged,
-            [&](const QString &ipMode) {
-                int ipFamily = ipMode.indexOf("4") == -1 ? AF_INET6 : AF_INET;
-                updateSourceIpCompleter(ipFamily, ui->captureComboBox->currentText());
-            });
+    switchIpTab();
 }
 
 NewPacketDialog::~NewPacketDialog()
@@ -40,7 +31,7 @@ DSPacket *NewPacketDialog::getNewPacket() {
         result = generateTcpPacket();
     } else if (type == tr("UDP")) {
         result = generateUdpPacket();
-    } else if (type == tr("IP")) {
+    } else if (type == tr("IPv4") || type == tr("IPv6")) {
         result = generateIpPacket();
     }
 
@@ -88,6 +79,41 @@ void NewPacketDialog::initDeviceList() {
     pcap_freealldevs(alldev);
 }
 
+void NewPacketDialog::initSignals() {
+    connect(ui->captureComboBox,
+            static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged),
+            [&](const QString &dev) {
+                int ipFamily = this->getIpFamily();
+                updateSourceIpCompleter(ipFamily, dev);
+            });
+    connect(ui->ipModeComboBox,
+            static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            [&](int index) {
+                int ipFamily = index == 1 ? AF_INET6 : AF_INET;
+                updateSourceIpCompleter(ipFamily, ui->captureComboBox->currentText());
+            });
+    connect(ui->ipModeComboBox,
+            static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            [&](int) {
+                switchIpTab();
+            });
+}
+
+void NewPacketDialog::switchIpTab() {
+    static QWidget *hidingTab;
+
+    if (hidingTab == nullptr) {
+        hidingTab = ui->tabPacketType->widget(TAB_IP + 1); // ipv6 tab
+        ui->tabPacketType->removeTab(TAB_IP + 1);
+        return;
+    }
+
+    QString label = ui->ipModeComboBox->currentIndex() ? "IPv6" : "IPv4";
+    ui->tabPacketType->insertTab(TAB_IP + 1, hidingTab, label);
+    hidingTab = ui->tabPacketType->widget(TAB_IP);
+    ui->tabPacketType->removeTab(TAB_IP);
+}
+
 void NewPacketDialog::show() {
 
     QDialog::show();
@@ -107,6 +133,8 @@ int NewPacketDialog::getIpFamily() const {
 }
 
 void NewPacketDialog::updateSourceIpCompleter(int family, const QString &dev) {
+    int devIndex = getDeviceByName(dev);
+    if (devIndex == -1) return;
     QStringList completerList(devicelist[getDeviceByName(dev)].get_ip_addresses(family));
     auto newCompleter = new QCompleter(completerList, this);
 

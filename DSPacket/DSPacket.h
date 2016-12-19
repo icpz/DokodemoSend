@@ -102,5 +102,11 @@ private:
 
 };
 
+class DSIpPacket6 : public DSPacket {
+
+public:
+    DSIpPacket6(const QString &device, int ipFamily, const QString &srcIp, const QString &dstIp, uint8_t nextHeader);
+};
+
 #endif
 

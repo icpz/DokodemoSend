@@ -33,6 +33,9 @@
    </property>
   </widget>
   <widget class="QTabWidget" name="tabPacketType">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -305,6 +308,11 @@
        <height>21</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <family>Courier New</family>
+      </font>
+     </property>
     </widget>
    </widget>
    <widget class="QWidget" name="tabUDP">
@@ -358,9 +366,9 @@
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="tabIP">
+   <widget class="QWidget" name="tabIPv4">
     <attribute name="title">
-     <string>IP</string>
+     <string>IPv4</string>
     </attribute>
     <widget class="QLabel" name="label_18">
      <property name="geometry">
@@ -384,6 +392,11 @@
        <height>21</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <family>Courier New</family>
+      </font>
+     </property>
     </widget>
     <widget class="QLineEdit" name="ipTos">
      <property name="geometry">
@@ -393,6 +406,11 @@
        <width>113</width>
        <height>21</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Courier New</family>
+      </font>
      </property>
      <property name="text">
       <string>0x0</string>
@@ -523,6 +541,14 @@
      </property>
     </widget>
    </widget>
+   <widget class="QWidget" name="tabIPv6">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <attribute name="title">
+     <string>IPv6</string>
+    </attribute>
+   </widget>
    <widget class="QWidget" name="tabARP">
     <attribute name="title">
      <string>ARP</string>
@@ -630,6 +656,11 @@
      <height>21</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>Courier New</family>
+    </font>
+   </property>
   </widget>
   <widget class="QLineEdit" name="dstIPEdit">
    <property name="geometry">
@@ -639,6 +670,11 @@
      <width>291</width>
      <height>21</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Courier New</family>
+    </font>
    </property>
   </widget>
   <widget class="QLineEdit" name="ttlEdit">
@@ -696,20 +732,25 @@
   <widget class="QPlainTextEdit" name="packetPayload">
    <property name="geometry">
     <rect>
-     <x>110</x>
+     <x>100</x>
      <y>270</y>
-     <width>441</width>
+     <width>451</width>
      <height>101</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Courier New</family>
+    </font>
    </property>
   </widget>
   <widget class="QLabel" name="label_15">
    <property name="geometry">
     <rect>
-     <x>40</x>
+     <x>30</x>
      <y>270</y>
-     <width>60</width>
-     <height>16</height>
+     <width>51</width>
+     <height>20</height>
     </rect>
    </property>
    <property name="text">

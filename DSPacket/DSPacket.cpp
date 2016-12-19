@@ -41,8 +41,17 @@ void DSPacket::updateIpHeader(int protoSize) {
                 libnet_name2addr4(handle,
                     const_cast<char *>(destination.toStdString().c_str()), LIBNET_DONT_RESOLVE),
                 nullptr, 0, handle, 0);
+    } else if (family == AF_INET6) {
+        qDebug() << "building ipv6...";
+        ptag = libnet_build_ipv6(0, 0,
+                protoSize, proto, ttl,
+                libnet_name2addr6(handle,
+                    source.toStdString().c_str(), LIBNET_DONT_RESOLVE),
+                libnet_name2addr6(handle,
+                    destination.toStdString().c_str(), LIBNET_DONT_RESOLVE),
+                nullptr, 0, handle, 0);
     }
-    if (ptag == -1) qDebug() << "build tcp failed: " << libnet_geterror(handle);
+    if (ptag == -1) qDebug() << "build ip header failed: " << libnet_geterror(handle);
 }
 
 void DSPacket::initHandle() {
