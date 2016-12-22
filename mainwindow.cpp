@@ -12,9 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     initPacketTable();
+    initSignals();
 
-    connect(ui->sendAllButton, &QPushButton::clicked, this, &MainWindow::sendAllPackets);
-    connect(ui->sendSelectedButton, &QPushButton::clicked, this, &MainWindow::sendSelectedPackets);
 }
 
 MainWindow::~MainWindow()
@@ -25,28 +24,11 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::addNewPacket() {
-    int newRow = ui->packetTable->rowCount();
-
-    auto set_table_item = [&](const QString &item) {
-        static int col = 0;
-        ui->packetTable->setItem(newRow, col++, new QTableWidgetItem(item));
-        col %= 7;
-    };
-
-    ui->packetTable->insertRow(newRow);
     auto newPacket = newPacketDlg->getNewPacket();
+    if (!newPacket) return;
+
     packets.push_back(newPacket);
-
-    set_table_item(QString::number(newRow + 1));
-    set_table_item(newPacket->getProto());
-    set_table_item(newPacket->getSourceIp());
-    set_table_item(newPacket->getDestinationIp());
-    set_table_item(newPacket->getCapture());
-    set_table_item(QString::number(newPacket->length()));
-    QString packetBuf;
-    newPacket->dumpPacket(packetBuf);
-    set_table_item(packetBuf);
-
+    reloadPackets();
     newPacketDlg->accept();
 }
 
@@ -54,15 +36,30 @@ void MainWindow::initPacketTable() {
     ui->packetTable->setColumnWidth(0, 30);
     ui->packetTable->setColumnWidth(1, 60);
     ui->packetTable->setColumnWidth(6, 200);
+}
+
+void MainWindow::initSignals() {
+    connect(ui->sendAllButton, &QPushButton::clicked, this, &MainWindow::sendAllPackets);
+    connect(ui->sendSelectedButton, &QPushButton::clicked, this, &MainWindow::sendSelectedPackets);
 
     connect(ui->newPacketButton, &QPushButton::clicked, this->newPacketDlg, &NewPacketDialog::show);
     connect(newPacketDlg->getUiHandle()->newPacketDlgButtonBox,
             &QDialogButtonBox::accepted, this, &MainWindow::addNewPacket);
+
     connect(ui->resetButton, &QPushButton::clicked, [=]() {
         for (auto c : packets) delete c;
         packets.clear();
-        ui->packetTable->clearContents();
-        ui->packetTable->setRowCount(0);
+        reloadPackets();
+    });
+    connect(ui->delPacketButton, &QPushButton::clicked, [=]() {
+        auto selected = ui->packetTable->selectionModel()->selectedRows();
+        qDebug() << selected.size() << "packets will be deleted";
+        for (const auto &idx : selected) {
+                delete packets[idx.row()];
+                packets[idx.row()] = nullptr;
+            });
+        packets.erase(std::remove(std::begin(packets), std::end(packets), nullptr), std::end(packets));
+        reloadPackets();
     });
 }
 
@@ -74,4 +71,30 @@ void MainWindow::sendSelectedPackets() {
     auto selected = ui->packetTable->selectionModel()->selectedRows();
     qDebug() << selected.size() << "packets selected";
     for (auto idx : selected) packets[idx.row()]->send();
+}
+
+void MainWindow::reloadPackets() {
+    ui->packetTable->clearContents();
+    ui->packetTable->setRowCount(0);
+
+    auto set_table_item = [&](int row, const QString &item) {
+        static int col = 0;
+        ui->packetTable->setItem(row, col++, new QTableWidgetItem(item));
+        col %= 7;
+    };
+
+    for (int i = 0; i < packets.size(); ++i) {
+        ui->packetTable->insertRow(i);
+        auto p = packets[i];
+
+        set_table_item(i, QString::number(i + 1));
+        set_table_item(i, p->getProto());
+        set_table_item(i, p->getSourceIp());
+        set_table_item(i, p->getDestinationIp());
+        set_table_item(i, p->getCapture());
+        set_table_item(i, QString::number(p->length()));
+        QString packetBuf;
+        p->dumpPacket(packetBuf);
+        set_table_item(i, packetBuf);
+    }
 }

@@ -27,6 +27,8 @@ private:
     void sendAllPackets();
     void addNewPacket();
     void initPacketTable();
+    void initSignals();
+    void reloadPackets();
 
 };
 
