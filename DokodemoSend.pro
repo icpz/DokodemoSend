@@ -14,15 +14,20 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     newpacketdialog.cpp \
-    dsdevice.cpp \
+    DSDevice/dsdevice.cpp \
     DSPacket/DSPacket.cpp \
     DSPacket/DSTcpPacket.cpp \
     DSPacket/DSUdpPacket.cpp \
-    DSPacket/DSIpPacket.cpp
+    DSPacket/DSIpPacket.cpp \
+    DSPacket/DSArpPacket.cpp \
+    DSPacket/DSIcmpPacket.cpp \
+    get_packet_value.cpp \
+    check_packet.cpp \
+    generate_packet.cpp
 
 HEADERS  += mainwindow.h \
     newpacketdialog.h \
-    dsdevice.h \
+    DSDevice/dsdevice.h \
     DSPacket/DSPacket.h
 
 FORMS    += mainwindow.ui \

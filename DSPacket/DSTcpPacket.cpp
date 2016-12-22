@@ -30,7 +30,7 @@ void DSTcpPacket::updateParameter() {
     libnet_ptag_t ptag;
     int tcpPacketLength = LIBNET_TCP_H + option.size() + payload.size();
 
-    DSPacket::initHandle();
+    DSPacket::initIpHandle();
 
     if (!option.empty()) {
         ptag = libnet_build_tcp_options(option.constData(), option.size(),
