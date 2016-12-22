@@ -21,7 +21,7 @@ void DSUdpPacket::updateParameter() {
     libnet_ptag_t ptag;
     int udpPacketLength = LIBNET_UDP_H + payload.size();
 
-    DSPacket::initHandle();
+    DSPacket::initIpHandle();
 
     ptag = libnet_build_udp(srcPort, dstPort, udpPacketLength, 0,
                 payload.constData(), payload.size(), handle, 0);

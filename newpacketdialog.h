@@ -5,7 +5,7 @@
 #include <string>
 #include "ui_newpacketdialog.h"
 #include <sys/socket.h>
-#include "dsdevice.h"
+#include "DSDevice/dsdevice.h"
 #include "DSPacket/DSPacket.h"
 #include <QVector>
 #include <stdint.h>
@@ -37,8 +37,14 @@ private:
     void initSignals();
     int getDeviceByName(const QString &name) const;
     void updateSourceIpCompleter(int family, const QString &dev);
+
+    int getTTL() const { return ui->ttlEdit->text().toInt(); }
+    int getDelay() const { return ui->delayEdit->text().toInt(); }
     int getIpFamily() const;
-    void switchIpTab();
+    QString getDevice() const { return ui->captureComboBox->currentText(); }
+    QString getSourceIp() const { return ui->srcIPEdit->text(); }
+    QString getDestinationIp() const { return ui->dstIPEdit->text(); }
+    QVector<uint8_t> getPayload() const { return parse_hex(ui->packetPayload->toPlainText()); }
 
     DSPacket *generateTcpPacket() const;
     bool checkTcp() const;
@@ -50,6 +56,13 @@ private:
     DSPacket *generateIpPacket() const;
     bool checkIp() const;
     int getIpFlag() const;
+
+    DSPacket *generateArpPacket() const;
+    bool checkArp() const;
+    int getArpType() const;
+
+    DSPacket *generateIcmpPacket() const;
+    bool checkIcmp() const;
 
     static void *get_in_addr(struct sockaddr *sa);
     static bool is_ip_valid(int family, const QString &ip);

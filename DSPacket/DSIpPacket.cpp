@@ -1,9 +1,9 @@
 #include "DSPacket.h"
 #include <QDebug>
 
-DSIpPacket4::DSIpPacket4(const QString &device, int ipFamily,
+DSIpPacket4::DSIpPacket4(const QString &device,
                         const QString &srcIp, const QString &dstIp, uint8_t proto)
-    : DSPacket(device, srcIp, dstIp, ipFamily, proto) {
+    : DSPacket(device, srcIp, dstIp, AF_INET, proto) {
 
 }
 
@@ -29,12 +29,12 @@ void DSIpPacket4::updateParameter() {
     int payloadLength = payload.size();
     int headerLength = LIBNET_IPV4_H + option.size();
 
-    DSPacket::initHandle();
+    DSPacket::initIpHandle();
 
     if (!option.empty()) {
         ptag = libnet_build_ipv4_options(option.constData(), option.size(),
-                                        handle, 0);
-        if (ptag == -1) qDebug() << "raw ip option:" << libnet_geterror(handle);
+                                         handle, 0);
+        if (ptag == -1) qDebug() << "raw ip option failed:" << libnet_geterror(handle);
     }
     ptag = libnet_build_ipv4(headerLength + payloadLength, tos,
                 identifier, frag, ttl, proto, 0, 

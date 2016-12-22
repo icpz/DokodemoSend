@@ -40,8 +40,10 @@ protected:
     QString source, destination, device;
     QVector<uint8_t> packet;
 
-    void updateIpHeader(int protoSize);
-    void initHandle();
+    void updateIpHeader(int protoSize, const uint8_t *ipPayload = nullptr, uint32_t ipPayloadSize = 0);
+    void updateLinkHeader(const QVector<uint8_t> &src, const QVector<uint8_t> &dst, uint16_t type);
+    void initIpHandle();
+    void initLinkHandle();
     void updatePacketData();
 };
 
@@ -86,7 +88,7 @@ private:
 class DSIpPacket4 : public DSPacket {
 
 public:
-    DSIpPacket4(const QString &device, int ipFamily, const QString &srcIp, const QString &dstIp, uint8_t proto);
+    DSIpPacket4(const QString &device, const QString &srcIp, const QString &dstIp, uint8_t proto);
     ~DSIpPacket4() { }
 
     void setupParameter(uint8_t tos, uint16_t identifier, uint8_t flags,
@@ -102,10 +104,36 @@ private:
 
 };
 
-class DSIpPacket6 : public DSPacket {
+class DSArpPacket : public DSPacket {
 
 public:
-    DSIpPacket6(const QString &device, int ipFamily, const QString &srcIp, const QString &dstIp, uint8_t nextHeader);
+    DSArpPacket(const QString &device, int ipFamily,
+                const QString &srcIp, const QString &dstIp);
+
+    void setupParameter(const QVector<uint8_t> &srcMac, const QVector<uint8_t> &dstMac,
+                        uint16_t type, const QVector<uint8_t> &payload);
+    void updateParameter();
+    QString getProto() const { return "ARP"; }
+
+private:
+    QVector<uint8_t> srcMac, dstMac, payload;
+    uint16_t type;
+};
+
+class DSIcmpPacket : public DSPacket {
+
+public:
+    DSIcmpPacket(const QString &device, int ipFamily,
+                 const QString &srcIp, const QString &dstIp);
+
+    void setupParameter(uint8_t type, uint8_t code, uint32_t rest, const QVector<uint8_t> &payload);
+    void updateParameter();
+    QString getProto() const { return "ICMP"; }
+
+private:
+    uint8_t type, code;
+    uint32_t rest;
+    QVector<uint8_t> payload;
 };
 
 #endif
