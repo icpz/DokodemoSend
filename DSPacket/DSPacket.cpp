@@ -94,7 +94,10 @@ void DSPacket::updatePacketData() {
     uint32_t packetSize;
 
     libnet_pblock_coalesce(handle, &packetBuf, &packetSize);
-    if (packetBuf == nullptr) qDebug() << "get pblock failed";
+    if (packetBuf == nullptr) {
+        qDebug() << "get pblock failed";
+        return;
+    }
     std::copy_n(packetBuf, packetSize, std::back_inserter(packet));
     free(packetBuf - handle->aligner);
 }
