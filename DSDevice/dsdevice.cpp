@@ -27,6 +27,6 @@ QList<QString> DSDevice::get_ip_addresses(int flag) const {
     return result;
 }
 
-int DSDevice::getlinktype() const {
+int DSDevice::get_linktype() const {
     return linktype;
 }

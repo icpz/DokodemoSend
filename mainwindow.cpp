@@ -4,18 +4,22 @@
 #include "ui_newpacketdialog.h"
 #include <QDebug>
 #include <QMessageBox>
-#inlcude <QFileDialog>
+#include <QFileDialog>
 #include <pcap/pcap.h>
+#include <fstream>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    newPacketDlg(new NewPacketDialog(this))
+    devicelist(0)
 {
     ui->setupUi(this);
 
     initPacketTable();
-    initSignals();
+    initDeviceList();
+
+    newPacketDlg = new NewPacketDialog(devicelist, this);
+    initSignal();
 
 }
 
@@ -41,7 +45,7 @@ void MainWindow::initPacketTable() {
     ui->packetTable->setColumnWidth(6, 200);
 }
 
-void MainWindow::initSignals() {
+void MainWindow::initSignal() {
     connect(ui->sendAllButton, &QPushButton::clicked, this, &MainWindow::sendAllPackets);
     connect(ui->sendSelectedButton, &QPushButton::clicked, this, &MainWindow::sendSelectedPackets);
 
@@ -64,18 +68,46 @@ void MainWindow::initSignals() {
         packets.erase(std::remove(std::begin(packets), std::end(packets), nullptr), std::end(packets));
         reloadPackets();
     });
+    connect(ui->actionSaveAsPcap, &QAction::triggered, this, &MainWindow::exportToPcapFile);
+}
+
+void MainWindow::initDeviceList() {
+    pcap_if_t *alldev;
+    char errbuf[PCAP_ERRBUF_SIZE];
+    char ipBuf[INET6_ADDRSTRLEN];
+
+    if (pcap_findalldevs(&alldev, errbuf)) {
+        qDebug() << errbuf << endl;
+        QApplication::quit();
+    }
+
+    for (auto device = alldev; device; device = device->next) {
+        DSDevice dev(tr(device->name), device->flags);
+        for (auto addr = device->addresses; addr; addr = addr->next) {
+            auto ipFamily = addr->addr->sa_family;
+            if(ipFamily == AF_INET || ipFamily == AF_INET6) {
+                inet_ntop(ipFamily, get_in_addr((struct sockaddr *)addr->addr), ipBuf, sizeof ipBuf);
+                dev.push_address(ipFamily, ipBuf);
+            }
+        }
+        if (dev.address_count()) {
+            devicelist.push_back(dev);
+        }
+    }
+
+    pcap_freealldevs(alldev);
 }
 
 void MainWindow::sendAllPackets() const {
     for (auto p : packets) p->send();
-    popUpMassageBox(tr("Packet Sent"), QString::number(packets.size()) + tr(" packets sent"));
+    popUpMessageBox(tr("Packet Sent"), QString::number(packets.size()) + tr(" packets sent"));
 }
 
 void MainWindow::sendSelectedPackets() const {
     auto selected = ui->packetTable->selectionModel()->selectedRows();
     qDebug() << selected.size() << "packets selected";
     for (auto idx : selected) packets[idx.row()]->send();
-    popUpMassageBox(tr("Packet Sent"), QString::number(selected.size()) + tr(" packets sent"));
+    popUpMessageBox(tr("Packet Sent"), QString::number(selected.size()) + tr(" packets sent"));
 }
 
 void MainWindow::reloadPackets() {
@@ -104,7 +136,7 @@ void MainWindow::reloadPackets() {
     }
 }
 
-void MainWindow::popUpMassageBox(const QString &title, const QString &message) const {
+void MainWindow::popUpMessageBox(const QString &title, const QString &message) const {
     QMessageBox msgBox(QMessageBox::Information, title,
                        message, QMessageBox::Ok, nullptr);
     msgBox.exec();
@@ -112,11 +144,48 @@ void MainWindow::popUpMassageBox(const QString &title, const QString &message) c
 
 void MainWindow::exportToPcapFile() {
     if (packets.size() == 0) {
-        popUpMassageBox(tr("Export to file"), tr("There is no packet to export"));
+        popUpMessageBox(tr("Export to file"), tr("There is no packet to export"));
         return;
     }
 
-    QString filename = QFileDialog::getSaveFileName(this, tr("Export to file"),
-                                                    QString(), tr("Pcap file (*.pcap)"));
+    QString dirPrefix = QFileDialog::getExistingDirectory(this, tr("Export to directory"));
+    if (dirPrefix.size() == 0) return;
+    struct pcap_file_header pcap_hdr;
+    struct pcap_pkthdr pkt_hdr;
+    std::fill_n(reinterpret_cast<uint8_t *>(&pcap_hdr), sizeof pcap_hdr, 0);
 
+    for (const auto c : devicelist) {
+        pcap_hdr.linktype = c.get_linktype() & PCAP_IF_LOOPBACK ? DLT_LOOP : DLT_EN10MB;
+        pcap_hdr.magic = 0xa1b2c3d4;
+        pcap_hdr.version_major = PCAP_VERSION_MAJOR;
+        pcap_hdr.version_minor = PCAP_VERSION_MINOR;
+        pcap_hdr.sigfigs = 0;
+        pcap_hdr.snaplen = 0x40000;
+        pcap_hdr.thiszone = 0;
+
+        QString filepath = dirPrefix + "/" + c.get_device_name() + ".pcap";
+        std::ofstream ofs(filepath.toStdString(), std::ios::binary | std::ios::out);
+        ofs.write(reinterpret_cast<char *>(&pcap_hdr), sizeof pcap_hdr);
+
+        for (const auto p : packets) {
+            if (p->getCapture() != c.get_device_name()) continue;
+            QVector<uint8_t> packetBuf(p->getPacket());
+
+            gettimeofday(&pkt_hdr.ts, nullptr);
+            pkt_hdr.caplen = pkt_hdr.len = packetBuf.size();
+            ofs.write(reinterpret_cast<char *>(&pkt_hdr.ts.tv_sec), 4);
+            ofs.write(reinterpret_cast<char *>(&pkt_hdr.ts.tv_usec), 4);
+            ofs.write(reinterpret_cast<char *>(&pkt_hdr.caplen), 8);
+            ofs.write(reinterpret_cast<const char *>(packetBuf.constData()), packetBuf.size());
+        }
+        ofs.close();
+    }
+    popUpMessageBox(tr("Export to file"), tr("Packets saved"));
+}
+
+void *MainWindow::get_in_addr(struct sockaddr *sa) {
+    if (sa->sa_family == AF_INET) {
+        return &(((struct sockaddr_in*)sa)->sin_addr);
+    }
+    return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
