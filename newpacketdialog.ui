@@ -19,7 +19,7 @@
   <widget class="QDialogButtonBox" name="newPacketDlgButtonBox">
    <property name="geometry">
     <rect>
-     <x>420</x>
+     <x>400</x>
      <y>431</y>
      <width>171</width>
      <height>41</height>
@@ -45,7 +45,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tabTCP">
     <attribute name="title">
@@ -60,6 +60,9 @@
        <height>21</height>
       </rect>
      </property>
+     <property name="inputMask">
+      <string/>
+     </property>
     </widget>
     <widget class="QLineEdit" name="tcpDstPort">
      <property name="geometry">
@@ -69,6 +72,9 @@
        <width>113</width>
        <height>21</height>
       </rect>
+     </property>
+     <property name="inputMask">
+      <string/>
      </property>
     </widget>
     <widget class="QLineEdit" name="tcpSeqNumber">
@@ -80,6 +86,9 @@
        <height>21</height>
       </rect>
      </property>
+     <property name="inputMask">
+      <string/>
+     </property>
     </widget>
     <widget class="QLineEdit" name="tcpAckNumber">
      <property name="geometry">
@@ -90,6 +99,9 @@
        <height>21</height>
       </rect>
      </property>
+     <property name="inputMask">
+      <string/>
+     </property>
     </widget>
     <widget class="QLineEdit" name="tcpWindow">
      <property name="geometry">
@@ -99,6 +111,9 @@
        <width>113</width>
        <height>21</height>
       </rect>
+     </property>
+     <property name="inputMask">
+      <string/>
      </property>
      <property name="text">
       <string>65535</string>
@@ -191,8 +206,11 @@
        <height>21</height>
       </rect>
      </property>
+     <property name="inputMask">
+      <string/>
+     </property>
      <property name="text">
-      <string>0</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_7">
@@ -328,6 +346,9 @@
        <height>21</height>
       </rect>
      </property>
+     <property name="inputMask">
+      <string/>
+     </property>
     </widget>
     <widget class="QLineEdit" name="udpDstPort">
      <property name="geometry">
@@ -337,6 +358,9 @@
        <width>113</width>
        <height>21</height>
       </rect>
+     </property>
+     <property name="inputMask">
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_16">
@@ -412,8 +436,11 @@
        <family>Courier New</family>
       </font>
      </property>
+     <property name="inputMask">
+      <string/>
+     </property>
      <property name="text">
-      <string>0x0</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLineEdit" name="ipIdentifier">
@@ -425,6 +452,9 @@
        <height>21</height>
       </rect>
      </property>
+     <property name="inputMask">
+      <string/>
+     </property>
     </widget>
     <widget class="QLineEdit" name="ipProto">
      <property name="geometry">
@@ -434,6 +464,9 @@
        <width>71</width>
        <height>21</height>
       </rect>
+     </property>
+     <property name="inputMask">
+      <string/>
      </property>
     </widget>
     <widget class="QLineEdit" name="ipFrag">
@@ -445,8 +478,11 @@
        <height>21</height>
       </rect>
      </property>
+     <property name="inputMask">
+      <string/>
+     </property>
      <property name="text">
-      <string>0</string>
+      <string/>
      </property>
     </widget>
     <widget class="QLabel" name="label_19">
@@ -559,6 +595,9 @@
        <family>Courier New</family>
       </font>
      </property>
+     <property name="inputMask">
+      <string/>
+     </property>
     </widget>
     <widget class="QLineEdit" name="dstMACEdit">
      <property name="geometry">
@@ -573,6 +612,9 @@
       <font>
        <family>Courier New</family>
       </font>
+     </property>
+     <property name="inputMask">
+      <string/>
      </property>
      <property name="text">
       <string>00-00-00-00-00-00</string>
@@ -696,6 +738,9 @@
        <family>Courier New</family>
       </font>
      </property>
+     <property name="inputMask">
+      <string/>
+     </property>
     </widget>
     <widget class="QLineEdit" name="icmpCodeEdit">
      <property name="geometry">
@@ -711,6 +756,9 @@
        <family>Courier New</family>
       </font>
      </property>
+     <property name="inputMask">
+      <string/>
+     </property>
     </widget>
     <widget class="QGroupBox" name="groupBox_2">
      <property name="geometry">
@@ -724,7 +772,7 @@
      <property name="title">
       <string>Rest of Header</string>
      </property>
-     <widget class="QCheckBox" name="icmpIDAndSeqMode">
+     <widget class="QRadioButton" name="icmpIDAndSeqMode">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -740,10 +788,10 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QCheckBox" name="icmpHexMode">
+     <widget class="QRadioButton" name="icmpHexMode">
       <property name="geometry">
        <rect>
-        <x>130</x>
+        <x>120</x>
         <y>30</y>
         <width>87</width>
         <height>20</height>
@@ -782,6 +830,9 @@
         <family>Courier New</family>
        </font>
       </property>
+      <property name="inputMask">
+       <string/>
+      </property>
      </widget>
      <widget class="QLabel" name="icmpLabelID">
       <property name="geometry">
@@ -807,6 +858,21 @@
       </property>
       <property name="text">
        <string>SEQ</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="icmpHexEdit">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>60</y>
+        <width>151</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Courier New</family>
+       </font>
       </property>
      </widget>
     </widget>
@@ -871,7 +937,7 @@
     <rect>
      <x>120</x>
      <y>420</y>
-     <width>291</width>
+     <width>131</width>
      <height>21</height>
     </rect>
    </property>
@@ -879,6 +945,12 @@
     <font>
      <family>Courier New</family>
     </font>
+   </property>
+   <property name="inputMask">
+    <string/>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </widget>
   <widget class="QLineEdit" name="dstIPEdit">
@@ -886,7 +958,7 @@
     <rect>
      <x>120</x>
      <y>450</y>
-     <width>291</width>
+     <width>131</width>
      <height>21</height>
     </rect>
    </property>
@@ -895,15 +967,21 @@
      <family>Courier New</family>
     </font>
    </property>
+   <property name="inputMask">
+    <string/>
+   </property>
   </widget>
   <widget class="QLineEdit" name="ttlEdit">
    <property name="geometry">
     <rect>
-     <x>350</x>
-     <y>390</y>
+     <x>320</x>
+     <y>420</y>
      <width>61</width>
      <height>21</height>
     </rect>
+   </property>
+   <property name="inputMask">
+    <string/>
    </property>
    <property name="text">
     <string>64</string>
@@ -912,11 +990,14 @@
   <widget class="QLineEdit" name="delayEdit">
    <property name="geometry">
     <rect>
-     <x>510</x>
-     <y>390</y>
+     <x>320</x>
+     <y>450</y>
      <width>61</width>
      <height>21</height>
     </rect>
+   </property>
+   <property name="inputMask">
+    <string/>
    </property>
    <property name="text">
     <string>0</string>
@@ -925,8 +1006,8 @@
   <widget class="QLabel" name="label_5">
    <property name="geometry">
     <rect>
-     <x>310</x>
-     <y>390</y>
+     <x>270</x>
+     <y>420</y>
      <width>31</width>
      <height>16</height>
     </rect>
@@ -938,8 +1019,8 @@
   <widget class="QLabel" name="label_6">
    <property name="geometry">
     <rect>
-     <x>460</x>
-     <y>390</y>
+     <x>270</x>
+     <y>450</y>
      <width>41</width>
      <height>16</height>
     </rect>

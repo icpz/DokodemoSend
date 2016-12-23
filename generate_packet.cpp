@@ -83,7 +83,7 @@ DSPacket *NewPacketDialog::generateIcmpPacket() const {
 
     uint32_t rest;
     if (ui->icmpHexMode->isChecked()) {
-        auto hexBuf = parse_hex(ui->icmpIDEdit->text());
+        auto hexBuf = parse_hex(ui->icmpHexEdit->text());
         for (auto c : hexBuf) rest = (rest << 8) + c;
     } else {
         rest = (ui->icmpIDEdit->text().toInt())

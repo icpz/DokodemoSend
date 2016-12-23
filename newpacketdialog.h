@@ -33,10 +33,13 @@ private:
     Ui::NewPacketDialog *ui;
     QVector<DSDevice> devicelist;
 
+    void initSignal();
+    void initValidator();
     void initDeviceList();
-    void initSignals();
     int getDeviceByName(const QString &name) const;
     void updateSourceIpCompleter(int family, const QString &dev);
+    bool checkCommon() const;
+    void popUpErrorMessageBox(const QString &errorMessage) const;
 
     int getTTL() const { return ui->ttlEdit->text().toInt(); }
     int getDelay() const { return ui->delayEdit->text().toInt(); }

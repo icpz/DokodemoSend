@@ -29,7 +29,7 @@ struct __icmp_min_header {
     uint32_t rest;
 };
 
-uint16_t __checksum(uint16_t *buffer,uint32_t size) {
+static uint16_t __checksum(uint16_t *buffer,uint32_t size) {
     uint32_t cksum = 0;
 
     while (size > 1) {

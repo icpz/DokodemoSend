@@ -29,6 +29,7 @@ private:
     void initPacketTable();
     void initSignals();
     void reloadPackets();
+    void popUpMassageBox(const QString &message);
 
 };
 
