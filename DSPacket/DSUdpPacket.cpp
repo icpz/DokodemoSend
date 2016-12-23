@@ -23,8 +23,10 @@ void DSUdpPacket::updateParameter() {
 
     DSPacket::initIpHandle();
 
+    qDebug() << "building udp...";
     ptag = libnet_build_udp(srcPort, dstPort, udpPacketLength, 0,
                 payload.constData(), payload.size(), handle, 0);
+    if (ptag == -1) qDebug() << "build udp packet failed";
 
     DSPacket::updateIpHeader(udpPacketLength);
     DSPacket::updatePacketData();

@@ -32,14 +32,17 @@ void DSTcpPacket::updateParameter() {
 
     DSPacket::initIpHandle();
 
+    qDebug() << "building tcp...";
     if (!option.empty()) {
         ptag = libnet_build_tcp_options(option.constData(), option.size(),
                 handle, 0);
+        if (ptag == -1) qDebug() << "build tcp option failed";
     }
 
     ptag = libnet_build_tcp(srcPort, dstPort, seq, ack, flag, windowsize, 0,
             urgpoint, tcpPacketLength,
             payload.constData(), payload.size(), handle, 0);
+    if (ptag == -1) qDebug() << "build tcp packet failed";
 
     DSPacket::updateIpHeader(tcpPacketLength);
     DSPacket::updatePacketData();
