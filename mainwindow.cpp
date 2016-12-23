@@ -55,9 +55,9 @@ void MainWindow::initSignals() {
         auto selected = ui->packetTable->selectionModel()->selectedRows();
         qDebug() << selected.size() << "packets will be deleted";
         for (const auto &idx : selected) {
-                delete packets[idx.row()];
-                packets[idx.row()] = nullptr;
-            });
+            delete packets[idx.row()];
+            packets[idx.row()] = nullptr;
+        }
         packets.erase(std::remove(std::begin(packets), std::end(packets), nullptr), std::end(packets));
         reloadPackets();
     });

@@ -14,7 +14,7 @@ public:
         : family(ipFamily), proto(proto), ttl(ttl), ready(false), delay(delay),
             handle(nullptr), source(srcIp), destination(dstIp), device(device) { }
 
-    virtual ~DSPacket() { }
+    virtual ~DSPacket() { if (handle) libnet_destroy(handle); }
 
     virtual int send() const;
     virtual int length() const;
