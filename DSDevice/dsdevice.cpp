@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <iterator>
 
-DSDevice::DSDevice(const QString &devname)
-    :name(devname) {
+DSDevice::DSDevice(const QString &devname, int linktype)
+    : name(devname), linktype(linktype) {
 }
 
 DSDevice::~DSDevice() {
@@ -25,4 +25,8 @@ QList<QString> DSDevice::get_ip_addresses(int flag) const {
         if (ip.first == flag) result.push_front(ip.second);
     }
     return result;
+}
+
+int DSDevice::get_linktype() const {
+    return linktype;
 }

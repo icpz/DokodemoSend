@@ -159,11 +159,7 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionNew_2"/>
-    <addaction name="actionSave"/>
-    <addaction name="separator"/>
-    <addaction name="actionSave_as_pcp"/>
-    <addaction name="actionSave_as_pcp_2"/>
+    <addaction name="actionSaveAsPcap"/>
     <addaction name="separator"/>
     <addaction name="actionClose"/>
    </widget>
@@ -190,9 +186,9 @@
     <string>Save</string>
    </property>
   </action>
-  <action name="actionSave_as_pcp_2">
+  <action name="actionSaveAsPcap">
    <property name="text">
-    <string>Save as pcp</string>
+    <string>Save as pcap</string>
    </property>
   </action>
   <action name="actionClose">

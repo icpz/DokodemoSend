@@ -27,6 +27,7 @@ public:
     QString getSourceIp() const { return source; }
     QString getDestinationIp() const { return destination; }
     QString getCapture() const { return device; }
+    QVector<uint8_t> getPacket() const { return packet; }
 
     virtual void dumpPacket(QString &buf) const;
 

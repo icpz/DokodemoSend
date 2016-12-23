@@ -5,6 +5,7 @@
 #include <QTableWidget>
 #include "newpacketdialog.h"
 #include "DSPacket/DSPacket.h"
+#include "DSDevice/dsdevice.h"
 
 namespace Ui {
 class MainWindow;
@@ -22,15 +23,19 @@ private:
     Ui::MainWindow *ui;
     NewPacketDialog *newPacketDlg;
     QVector<DSPacket *> packets;
+    QVector<DSDevice> devicelist;
 
     void sendSelectedPackets() const;
     void sendAllPackets() const;
     void addNewPacket();
     void initPacketTable();
-    void initSignals();
+    void initDeviceList();
+    void initSignal();
     void reloadPackets();
-    void popUpMassageBox(const QString &title, const QString &message) const;
+    void popUpMessageBox(const QString &title, const QString &message) const;
+    void exportToPcapFile();
 
+    static void *get_in_addr(struct sockaddr *sa);
 };
 
 #endif // MAINWINDOW_H

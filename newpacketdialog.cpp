@@ -6,16 +6,21 @@
 #include <sys/socket.h>
 #include <QMessageBox>
 
-NewPacketDialog::NewPacketDialog(QWidget *parent) :
+NewPacketDialog::NewPacketDialog(const QVector<DSDevice> devs, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::NewPacketDialog),
-    devicelist(0)
+    devicelist(devs)
 {
     ui->setupUi(this);
 
-    initDeviceList();
     initSignal();
     initValidator();
+
+    QStringList devList;
+    for (const auto &c : devicelist) {
+        devList << c.get_device_name();
+    }
+    ui->captureComboBox->addItems(devList);
 
 }
 
@@ -28,7 +33,7 @@ void NewPacketDialog::initValidator() {
     static const QRegularExpression ipAddressReg("^(\\d{1,3}\\.){3}\\d{1,3}$"),
             decNumber16Reg("^\\d{1,5}$"), decNumber32Reg("^\\d{1,10}$"), decNumber8Reg("^\\d{1,3}$"),
             hexNumber32Reg("^[\\da-fA-F]{1,8}$"), hexNumber8Reg("^[\\da-fA-F]{1,2}$"),
-            macAddressReg("^([\\da-fA-F]-){5}[\\da-fA-F]$"),
+            macAddressReg("^([\\da-fA-F]{2}-){5}[\\da-fA-F]{2}$"),
             hexOptionReg("^([\\da-fA-F]{2}[- ]?)*$");
 
     auto setValidator = [&](std::initializer_list<QLineEdit *> wlist, const QRegularExpression &reg) {
@@ -50,39 +55,6 @@ void NewPacketDialog::initValidator() {
     setValidator({ui->srcMACEdit, ui->dstMACEdit}, macAddressReg);
     setValidator({ui->tcpOptions, ui->ipOptions}, hexOptionReg);
 
-}
-
-void NewPacketDialog::initDeviceList() {
-    pcap_if_t *alldev;
-    char errbuf[PCAP_ERRBUF_SIZE];
-    char ipBuf[INET6_ADDRSTRLEN];
-    QStringList devList;
-
-    if (pcap_findalldevs(&alldev, errbuf)) {
-        qDebug() << errbuf << endl;
-        QApplication::quit();
-    }
-
-    for (auto device = alldev; device; device = device->next) {
-        DSDevice dev(tr(device->name));
-        for (auto addr = device->addresses; addr; addr = addr->next) {
-            auto ipFamily = addr->addr->sa_family;
-            if(ipFamily == AF_INET || ipFamily == AF_INET6) {
-                inet_ntop(ipFamily, get_in_addr((struct sockaddr *)addr->addr), ipBuf, sizeof ipBuf);
-                dev.push_address(ipFamily, ipBuf);
-            }
-        }
-        if (dev.address_count()) {
-            devicelist.push_back(dev);
-        }
-    }
-
-    for (const auto &c : devicelist) {
-        devList << c.get_device_name();
-    }
-    ui->captureComboBox->addItems(devList);
-
-    pcap_freealldevs(alldev);
 }
 
 void NewPacketDialog::initSignal() {

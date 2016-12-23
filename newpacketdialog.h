@@ -22,7 +22,7 @@ public:
 
     enum {TAB_TCP, TAB_UDP, TAB_IP, TAB_ARP, TAB_ICMP};
 
-    explicit NewPacketDialog(QWidget *parent = 0);
+    explicit NewPacketDialog(const QVector<DSDevice> devs, QWidget *parent = 0);
     ~NewPacketDialog();
 
     Ui::NewPacketDialog *getUiHandle() { return ui; }
@@ -35,7 +35,6 @@ private:
 
     void initSignal();
     void initValidator();
-    void initDeviceList();
     int getDeviceByName(const QString &name) const;
     void updateSourceIpCompleter(int family, const QString &dev);
     bool checkCommon() const;
@@ -67,7 +66,6 @@ private:
     DSPacket *generateIcmpPacket() const;
     bool checkIcmp() const;
 
-    static void *get_in_addr(struct sockaddr *sa);
     static bool is_ip_valid(int family, const QString &ip);
     static QVector<uint8_t> parse_hex(const QString &hexes);
 };
