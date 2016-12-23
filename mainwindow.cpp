@@ -3,6 +3,7 @@
 #include "newpacketdialog.h"
 #include "ui_newpacketdialog.h"
 #include <QDebug>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -63,14 +64,16 @@ void MainWindow::initSignals() {
     });
 }
 
-void MainWindow::sendAllPackets() {
+void MainWindow::sendAllPackets() const {
     for (auto p : packets) p->send();
+    popUpMassageBox(tr("Packet Sent"), QString::number(packets.size()) + tr(" packets sent"));
 }
 
-void MainWindow::sendSelectedPackets() {
+void MainWindow::sendSelectedPackets() const {
     auto selected = ui->packetTable->selectionModel()->selectedRows();
     qDebug() << selected.size() << "packets selected";
     for (auto idx : selected) packets[idx.row()]->send();
+    popUpMassageBox(tr("Packet Sent"), QString::number(selected.size()) + tr(" packets sent"));
 }
 
 void MainWindow::reloadPackets() {
@@ -97,4 +100,10 @@ void MainWindow::reloadPackets() {
         p->dumpPacket(packetBuf);
         set_table_item(i, packetBuf);
     }
+}
+
+void MainWindow::popUpMassageBox(const QString &title, const QString &message) const {
+    QMessageBox msgBox(QMessageBox::Information, title,
+                       message, QMessageBox::Ok, nullptr);
+    msgBox.exec();
 }

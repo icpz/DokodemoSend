@@ -23,13 +23,13 @@ private:
     NewPacketDialog *newPacketDlg;
     QVector<DSPacket *> packets;
 
-    void sendSelectedPackets();
-    void sendAllPackets();
+    void sendSelectedPackets() const;
+    void sendAllPackets() const;
     void addNewPacket();
     void initPacketTable();
     void initSignals();
     void reloadPackets();
-    void popUpMassageBox(const QString &message);
+    void popUpMassageBox(const QString &title, const QString &message) const;
 
 };
 
