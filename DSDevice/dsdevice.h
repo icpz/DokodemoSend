@@ -12,17 +12,19 @@ public:
     using list_node = QPair<int, QString>;
 
     DSDevice() { }
-    explicit DSDevice(const QString &devname);
+    explicit DSDevice(const QString &devname, int linktype);
     ~DSDevice();
 
     void push_address(int flag, QString ip);
     QString get_device_name() const;
     QList<QString> get_ip_addresses(int flag) const;
+    int get_linktype() const;
     int address_count() const { return iplist.size(); }
 
 private:
     QString name;
     QList<list_node> iplist;
+    int linktype;
 
 };
 

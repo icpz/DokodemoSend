@@ -4,6 +4,8 @@
 #include "ui_newpacketdialog.h"
 #include <QDebug>
 #include <QMessageBox>
+#inlcude <QFileDialog>
+#include <pcap/pcap.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -106,4 +108,15 @@ void MainWindow::popUpMassageBox(const QString &title, const QString &message) c
     QMessageBox msgBox(QMessageBox::Information, title,
                        message, QMessageBox::Ok, nullptr);
     msgBox.exec();
+}
+
+void MainWindow::exportToPcapFile() {
+    if (packets.size() == 0) {
+        popUpMassageBox(tr("Export to file"), tr("There is no packet to export"));
+        return;
+    }
+
+    QString filename = QFileDialog::getSaveFileName(this, tr("Export to file"),
+                                                    QString(), tr("Pcap file (*.pcap)"));
+
 }

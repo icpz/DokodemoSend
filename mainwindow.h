@@ -30,6 +30,7 @@ private:
     void initSignals();
     void reloadPackets();
     void popUpMassageBox(const QString &title, const QString &message) const;
+    void exportToPcapFile();
 
 };
 
