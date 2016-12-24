@@ -155,7 +155,7 @@ void MainWindow::exportToPcapFile() {
     std::fill_n(reinterpret_cast<uint8_t *>(&pcap_hdr), sizeof pcap_hdr, 0);
 
     for (const auto c : devicelist) {
-        pcap_hdr.linktype = c.get_linktype() & PCAP_IF_LOOPBACK ? DLT_LOOP : DLT_EN10MB;
+        pcap_hdr.linktype = DLT_RAW;
         pcap_hdr.magic = 0xa1b2c3d4;
         pcap_hdr.version_major = PCAP_VERSION_MAJOR;
         pcap_hdr.version_minor = PCAP_VERSION_MINOR;
@@ -169,6 +169,7 @@ void MainWindow::exportToPcapFile() {
 
         for (const auto p : packets) {
             if (p->getCapture() != c.get_device_name()) continue;
+            if (p->getProto() == "ARP") continue;
             QVector<uint8_t> packetBuf(p->getPacket());
 
             gettimeofday(&pkt_hdr.ts, nullptr);
