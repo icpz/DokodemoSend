@@ -10,7 +10,7 @@ static bool __check_ip_address(int family, const QString &addr) {
 }
 
 static bool __check_range(uint64_t number, uint8_t bitwidth) {
-    return number < (1U << bitwidth);
+    return number < (1ULL << bitwidth);
 }
 
 bool NewPacketDialog::checkTcp() const {
