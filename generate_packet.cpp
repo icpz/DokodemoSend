@@ -81,7 +81,7 @@ DSPacket *NewPacketDialog::generateIcmpPacket() const {
     if (!checkIcmp()) return nullptr;
     DSIcmpPacket *result = nullptr;
 
-    uint32_t rest;
+    uint32_t rest = 0;
     if (ui->icmpHexMode->isChecked()) {
         auto hexBuf = parse_hex(ui->icmpHexEdit->text());
         for (auto c : hexBuf) rest = (rest << 8) + c;
