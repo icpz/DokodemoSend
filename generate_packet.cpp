@@ -86,8 +86,8 @@ DSPacket *NewPacketDialog::generateIcmpPacket() const {
         auto hexBuf = parse_hex(ui->icmpHexEdit->text());
         for (auto c : hexBuf) rest = (rest << 8) + c;
     } else {
-        rest = (ui->icmpIDEdit->text().toInt())
-             + (ui->icmpSeqEdit->text().toInt() << 16);
+        rest = htons(ui->icmpIDEdit->text().toInt())
+             + (static_cast<uint32_t>(htons(ui->icmpSeqEdit->text().toInt())) << 16);
     }
     result = new DSIcmpPacket(getDevice(), getIpFamily(), getSourceIp(),
                               getDestinationIp());
