@@ -35,9 +35,9 @@ private:
 
     void initSignal();
     void initValidator();
-    int getDeviceByName(const QString &name) const;
+    int getDeviceByName(const QString &name) const; // get the index in the combobox
     void updateSourceIpCompleter(int family, const QString &dev);
-    bool checkCommon() const;
+    bool checkCommon() const;   // check the common parameters.
     void popUpErrorMessageBox(const QString &errorMessage) const;
 
     int getTTL() const { return ui->ttlEdit->text().toInt(); }

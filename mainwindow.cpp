@@ -148,12 +148,14 @@ void MainWindow::exportToPcapFile() {
         return;
     }
 
+    // users are expected to select an existing directory here
     QString dirPrefix = QFileDialog::getExistingDirectory(this, tr("Export to directory"));
     if (dirPrefix.size() == 0) return;
     struct pcap_file_header pcap_hdr;
     struct pcap_pkthdr pkt_hdr;
     std::fill_n(reinterpret_cast<uint8_t *>(&pcap_hdr), sizeof pcap_hdr, 0);
 
+    // one device per file
     for (const auto c : devicelist) {
         pcap_hdr.linktype = DLT_RAW;
         pcap_hdr.magic = 0xa1b2c3d4;
@@ -169,7 +171,8 @@ void MainWindow::exportToPcapFile() {
 
         for (const auto p : packets) {
             if (p->getCapture() != c.get_device_name()) continue;
-            if (p->getProto() == "ARP") continue;
+            if (p->getProto() == "ARP") continue;   // ARP packets have the link-layer data generated
+                                                    // So we skip the ARP packets due to the linktype DLT_RAW
             QVector<uint8_t> packetBuf(p->getPacket());
 
             gettimeofday(&pkt_hdr.ts, nullptr);

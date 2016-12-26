@@ -6,6 +6,11 @@
 #include <libnet.h>
 #include <stdint.h>
 
+/*
+ * DSPacket is an pure-virtual class which
+ * is designed to describe the 5 sorts of
+ * packets.
+ */
 class DSPacket {
     
 public:
@@ -21,13 +26,13 @@ public:
     int status() const;
     void setTTL(uint8_t ttl) { this->ttl = ttl; ready = false; }
     void setDelay(time_t delay) { this->delay = delay; ready = false; }
-    virtual void updateParameter() = 0;
+    virtual void updateParameter() = 0;                     // build the packets with the parameters
 
     virtual QString getProto() const = 0;
     QString getSourceIp() const { return source; }
     QString getDestinationIp() const { return destination; }
     QString getCapture() const { return device; }
-    QVector<uint8_t> getPacket() const { return packet; }
+    QVector<uint8_t> getPacket() const { return packet; }   // returns raw data in byte-stream
 
     virtual void dumpPacket(QString &buf) const;
 
@@ -48,6 +53,9 @@ protected:
     void updatePacketData();
 };
 
+/*
+ * DSTcpPacket: to describe a TCP packet
+ */
 class DSTcpPacket : public DSPacket {
 
 public:
@@ -69,6 +77,9 @@ private:
 
 };
 
+/*
+ * DSUdpPacket: to describe a UDP packet
+ */
 class DSUdpPacket : public DSPacket{
 
 public:
@@ -86,6 +97,9 @@ private:
 
 };
 
+/*
+ * DSIpPacket4: to describe a raw IPv4 packet
+ */
 class DSIpPacket4 : public DSPacket {
 
 public:
@@ -105,6 +119,9 @@ private:
 
 };
 
+/*
+ * DSArpPacket: to describe an ARP packet
+ */
 class DSArpPacket : public DSPacket {
 
 public:
@@ -121,6 +138,9 @@ private:
     uint16_t type;
 };
 
+/*
+ * DSIcmpPacket: to describe an ICMP packet
+ */
 class DSIcmpPacket : public DSPacket {
 
 public:
@@ -138,4 +158,3 @@ private:
 };
 
 #endif
-

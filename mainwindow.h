@@ -31,7 +31,7 @@ private:
     void initPacketTable();
     void initDeviceList();
     void initSignal();
-    void reloadPackets();
+    void reloadPackets();       // reload the packets to the table view
     void popUpMessageBox(const QString &title, const QString &message) const;
     void exportToPcapFile();
 
