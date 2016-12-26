@@ -87,10 +87,10 @@ void MainWindow::initDeviceList() {
             auto ipFamily = addr->addr->sa_family;
             if(ipFamily == AF_INET || ipFamily == AF_INET6) {
                 inet_ntop(ipFamily, get_in_addr((struct sockaddr *)addr->addr), ipBuf, sizeof ipBuf);
-                dev.push_address(ipFamily, ipBuf);
+                dev.pushAddress(ipFamily, ipBuf);
             }
         }
-        if (dev.address_count()) {
+        if (dev.addressCount()) {
             devicelist.push_back(dev);
         }
     }
@@ -165,12 +165,12 @@ void MainWindow::exportToPcapFile() {
         pcap_hdr.snaplen = 0x40000;
         pcap_hdr.thiszone = 0;
 
-        QString filepath = dirPrefix + "/" + c.get_device_name() + ".pcap";
+        QString filepath = dirPrefix + "/" + c.getDeviceName() + ".pcap";
         std::ofstream ofs(filepath.toStdString(), std::ios::binary | std::ios::out);
         ofs.write(reinterpret_cast<char *>(&pcap_hdr), sizeof pcap_hdr);
 
         for (const auto p : packets) {
-            if (p->getCapture() != c.get_device_name()) continue;
+            if (p->getCapture() != c.getDeviceName()) continue;
             if (p->getProto() == "ARP") continue;   // ARP packets have the link-layer data generated
                                                     // So we skip the ARP packets due to the linktype DLT_RAW
             QVector<uint8_t> packetBuf(p->getPacket());

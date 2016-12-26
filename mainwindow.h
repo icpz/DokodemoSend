@@ -5,7 +5,7 @@
 #include <QTableWidget>
 #include "newpacketdialog.h"
 #include "DSPacket/DSPacket.h"
-#include "DSDevice/dsdevice.h"
+#include "DSDevice/DSDevice.h"
 
 namespace Ui {
 class MainWindow;

@@ -1,5 +1,5 @@
 
-#include "dsdevice.h"
+#include "DSDevice.h"
 #include <algorithm>
 #include <iterator>
 
@@ -11,15 +11,15 @@ DSDevice::~DSDevice() {
 
 }
 
-void DSDevice::push_address(int flag, QString ip) {
+void DSDevice::pushAddress(int flag, QString ip) {
     iplist.push_back(qMakePair(flag, ip));
 }
 
-QString DSDevice::get_device_name() const {
+QString DSDevice::getDeviceName() const {
     return name;
 }
 
-QList<QString> DSDevice::get_ip_addresses(int flag) const {
+QList<QString> DSDevice::getIpAddresses(int flag) const {
     QList<QString> result;
     for (const auto &ip : iplist) {
         if (ip.first == flag) result.push_front(ip.second);
@@ -27,6 +27,6 @@ QList<QString> DSDevice::get_ip_addresses(int flag) const {
     return result;
 }
 
-int DSDevice::get_linktype() const {
+int DSDevice::getLinktype() const {
     return linktype;
 }

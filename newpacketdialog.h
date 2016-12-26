@@ -5,7 +5,7 @@
 #include <string>
 #include "ui_newpacketdialog.h"
 #include <sys/socket.h>
-#include "DSDevice/dsdevice.h"
+#include "DSDevice/DSDevice.h"
 #include "DSPacket/DSPacket.h"
 #include <QVector>
 #include <stdint.h>

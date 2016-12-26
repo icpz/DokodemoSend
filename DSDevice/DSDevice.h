@@ -19,11 +19,11 @@ public:
     explicit DSDevice(const QString &devname, int linktype);
     ~DSDevice();
 
-    void push_address(int flag, QString ip);
-    QString get_device_name() const;
-    QList<QString> get_ip_addresses(int flag) const;
-    int get_linktype() const; // loopback has a different type with others on BSD system
-    int address_count() const { return iplist.size(); }
+    void pushAddress(int flag, QString ip);
+    QString getDeviceName() const;
+    QList<QString> getIpAddresses(int flag) const;
+    int getLinktype() const; // loopback has a different type with others on BSD system
+    int addressCount() const { return iplist.size(); }
 
 private:
     QString name;

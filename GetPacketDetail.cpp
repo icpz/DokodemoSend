@@ -21,7 +21,7 @@ DSPacket *NewPacketDialog::getNewPacket() {
 
 int NewPacketDialog::getDeviceByName(const QString &name) const {
     for (int i = 0; i < devicelist.size(); ++i) {
-        if (devicelist[i].get_device_name() == name)
+        if (devicelist[i].getDeviceName() == name)
             return i;
     }
     return -1;

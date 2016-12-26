@@ -18,7 +18,7 @@ NewPacketDialog::NewPacketDialog(const QVector<DSDevice> devs, QWidget *parent) 
 
     QStringList devList;
     for (const auto &c : devicelist) {
-        devList << c.get_device_name();
+        devList << c.getDeviceName();
     }
     ui->captureComboBox->addItems(devList);
 
@@ -114,7 +114,7 @@ void NewPacketDialog::show() {
 void NewPacketDialog::updateSourceIpCompleter(int family, const QString &dev) {
     int devIndex = getDeviceByName(dev);
     if (devIndex == -1) return;
-    QStringList completerList(devicelist[getDeviceByName(dev)].get_ip_addresses(family));
+    QStringList completerList(devicelist[getDeviceByName(dev)].getIpAddresses(family));
     auto newCompleter = new QCompleter(completerList, this);
 
     newCompleter->setCaseSensitivity(Qt::CaseInsensitive);
